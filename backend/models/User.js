@@ -1,20 +1,9 @@
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
+const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-    name: String,
-    email: { type: String, unique: true },
-    password: String,
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    rooms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Room' }]
 });
 
-UserSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
-});
-
-UserSchema.methods.matchPassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
-};
-
-export default mongoose.model("User", UserSchema);
+module.exports = mongoose.model('User', UserSchema);
